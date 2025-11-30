@@ -5,10 +5,7 @@ function randomEntero(min, max) {
 }
 
 function limpiarCromosoma(crom) {
-    // Reduce a la paridad de los movimientos: si una casilla aparece un número par
-    // de veces, su efecto neto es nulo. Conservamos sólo las casillas con
-    // ocurrencia impar y respetamos el orden de primera aparición para
-    // mantener una animación predecible.
+    
     const isValid = (r, c) => Number.isInteger(r) && Number.isInteger(c) && r >= 0 && r < 5 && c >= 0 && c < 5;
 
     const counts = new Map();
@@ -20,13 +17,11 @@ function limpiarCromosoma(crom) {
         counts.set(key, (counts.get(key) || 0) + 1);
     }
 
-    // Seleccionar sólo las casillas con ocurrencia impar
     const oddKeys = new Set();
     for (const [k, v] of counts.entries()) {
         if (v % 2 === 1) oddKeys.add(k);
     }
 
-    // Preservar el orden de primera aparición entre las claves impares
     const usados = new Set();
     const limpio = [];
     for (const gen of crom) {
@@ -51,16 +46,6 @@ function calcularFitness(tablero) {
 
     return luces; //+ rep * pesoRepeticion;
 }
-
-//function calcularFitness(tablero) {
-//    let fit = 0;
-//    for (let i = 0; i < 5; i++) {
-//        for (let j = 0; j < 5; j++) {
-//            if (tablero[i][j] === 1) fit++;
-//        }
-//    }
-//    return fit;
-//}
 
 function crearCromosoma(tam) {
     let crom = [];
@@ -114,15 +99,13 @@ function aplicarCromosoma(tablero, secuencia) {
 }
 
 function buscarSolucionEnSubsecuencias(tablero, cromosoma) {
-  // Verifica si existe una subsecuencia dentro del cromosoma que resuelva el tablero
-  // antes de aplicar todos los genes
+  
   for (let fin = 1; fin < cromosoma.length; fin++) {
     const subsecuencia = cromosoma.slice(0, fin);
     const tableroResultante = aplicarCromosoma(tablero, subsecuencia);
     const fitness = calcularFitness(tableroResultante);
     
     if (fitness === 0) {
-      // Encontrada solución en subsecuencia
       return subsecuencia;
     }
   }
@@ -175,18 +158,19 @@ function buscarMejoresElitismo(poblacion, porcentaje) {
     return elites;
 }
 
-function seleccionProgenitores(tamPob, poblacion, porcentajeTorneo, porcentajeElitismo) {
-    const n = Math.round(poblacion.length*(porcentajeTorneo/100));
-    const elites = Math.round(poblacion.length*(porcentajeElitismo/100));
-    const parejas = tamPob - elites;
+function seleccionProgenitores(tamPoblacion, poblacion, porcentajeTorneo, porcentajeElitismo) {
+
+    const n = Math.round(poblacion.length * (porcentajeTorneo / 100));
+    const elites = Math.round(poblacion.length * (porcentajeElitismo / 100));
+    const parejas = tamPoblacion - elites;
     const pool = [];
 
     for (let i = 0; i < parejas; i++) {
         const torneo1 = rdSample(poblacion, n);
-        const padre1 = torneo1.reduce((b,f)=> f[1]<b[1]?f:b);
+        const padre1 = torneo1.reduce((b, f) => f[1] < b[1] ? f : b);
 
         const torneo2 = rdSample(poblacion, n);
-        const padre2 = torneo2.reduce((b,f)=> f[1]<b[1]?f:b);
+        const padre2 = torneo2.reduce((b, f) => f[1] < b[1] ? f : b);
 
         pool.push([padre1[0], padre2[0]]);
     }
@@ -197,8 +181,8 @@ function seleccionProgenitores(tamPob, poblacion, porcentajeTorneo, porcentajeEl
 function mutacion(crom, porcentaje) {
     let nuevo = crom.map(g => [...g]);
     for (let i = 0; i < nuevo.length; i++) {
-        if (randomEntero(1,100) <= porcentaje) {
-            nuevo[i] = [randomEntero(0,4), randomEntero(0,4)];
+        if (randomEntero(1, 100) <= porcentaje) {
+            nuevo[i] = [randomEntero(0, 4), randomEntero(0, 4)];
         }
     }
     return nuevo;
@@ -211,20 +195,18 @@ function cruzamiento(progenitores, tablero, porcentajeMutacion) {
         const largo = padre1.length;
         const corte = randomEntero(1, largo-1);
 
-        const hijo1 = padre1.slice(0,corte).concat(padre2.slice(corte));
-        const hijo2 = padre2.slice(0,corte).concat(padre1.slice(corte));
+        const hijo1 = padre1.slice(0, corte).concat(padre2.slice(corte));
+        const hijo2 = padre2.slice(0, corte).concat(padre1.slice(corte));
 
         const hijo1Cromosoma = mutacion(hijo1, porcentajeMutacion);
         const hijo2Cromosoma = mutacion(hijo2, porcentajeMutacion);
 
-        // Verificar subsecuencias en hijo1
         const subsol1 = buscarSolucionEnSubsecuencias(tablero, hijo1Cromosoma);
         if (subsol1) {
             hijosElegidos.push([subsol1, 0]);
             continue;
         }
 
-        // Verificar subsecuencias en hijo2
         const subsol2 = buscarSolucionEnSubsecuencias(tablero, hijo2Cromosoma);
         if (subsol2) {
             hijosElegidos.push([subsol2, 0]);
@@ -270,15 +252,11 @@ export function ag(
 
         const solucion = nuevaGen.find(i => i[1] === 0);
         if (solucion) {
-            // console.log(tablero);
-            // const tableroFinal = aplicarCromosoma(tablero, solucion[0]);
-            // console.log(tableroFinal);
             console.log(`Solución encontrada en generación ${gen}`);
             return solucion;
         }
 
         const avgFit = poblacion.reduce((s, i) => s + i[1], 0) / poblacion.length;
-        // console.log(`generación ${gen}; mejor: ${elites[0][1]}, promedio: ${avgFit}`);
 
         poblacion = nuevaGen;
     }

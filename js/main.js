@@ -8,9 +8,10 @@ function initGame() {
   tableroBase = generarTablero();
   tableroActual = tableroBase.map(f => [...f]);
   generarVistaTablero(tableroActual, manejarClick);
+  const lista = document.getElementById("lista-solucion");
+  if (lista) lista.innerHTML = "";
 }
 
-// Start button: hide start screen and initialize game
 const startBtn = document.getElementById("start-button");
 if (startBtn) {
   startBtn.addEventListener("click", () => {
@@ -28,12 +29,12 @@ function manejarClick(i, j) {
 
 console.log("Tablero inicial:", tableroBase);
 
-const tamPoblacion = 150;
+const tamPoblacion = 200;
 const tamCromosoma = 50;
 const porcentajeTorneo = 25;
 const porcentajeElitismo = 10;
 const porcentajeMutacion = 10;
-const numGeneraciones = 2000;
+const numGeneraciones = 3000;
 
 document.getElementById("boton-rendirse").addEventListener("click", async () => {
   const copiaGA = tableroActual.map(f => [...f]);
@@ -52,13 +53,56 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
 
     console.log("Tablero antes de solución:", copiaGA);
     console.log("Solución encontrada:", sol[0]);
-    tableroActual = await aplicarSecuenciaConAnimacion(copiaGA, sol[0], 250);
-    generarVistaTablero(tableroActual, manejarClick);
-    
+  
+    mostrarSolucion(sol[0]);
 
+    tableroActual = await aplicarSecuenciaConAnimacion(copiaGA, sol[0], 250);
+    
+    //Esperar 1 segundo antes de regenerar la vista del tablero al que se le aplica el AG.
+    await new Promise(res => setTimeout(res, 1000));
+    
+    generarVistaTablero(copiaGA, manejarClick);
+
+    tableroActual = copiaGA;
+    
   } else {
     
     console.log("No se encontró solución en el límite de generaciones");
+    const lista = document.getElementById("lista-solucion");
+    if (lista) {
+      lista.innerHTML = "";
+      const li = document.createElement('li');
+      li.textContent = 'No se encontró solución';
+      lista.appendChild(li);
+    }
   }
 });
+
+document.getElementById("boton-rehacer").addEventListener("click", () => {
+  initGame();
+});
+
+//Traduce la solución.
+function coordToLabel([r, c]) {
+  const filas = ['A','B','C','D','E'];
+  const fila = filas[r] || '?';
+  const col = (c + 1) || '?';
+  return `${fila}${col}`;
+}
+
+//Rellena la lista con la solución de el tablero.
+function mostrarSolucion(cromosoma) {
+  const lista = document.getElementById('lista-solucion');
+  if (!lista) return;
+  lista.innerHTML = '';
+
+  for (let i = 0; i < cromosoma.length; i++) {
+    const paso = cromosoma[i];
+    if (!Array.isArray(paso) || paso.length < 2) continue;
+    const li = document.createElement('li');
+    const label = coordToLabel(paso);
+    li.textContent = `${i + 1}. ${label}`;
+    lista.appendChild(li);
+  }
+}
 

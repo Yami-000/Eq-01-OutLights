@@ -8,7 +8,7 @@
 </head>
 
 <body class="h-screen bg-fondo">
-    <!-- Start screen shown on first load -->
+    
     <div id="start-screen" class="start-screen">
       <h1 class="start-title">Lights-Out</h1>
       <button id="start-button" class="start-btn">Comenzar</button>
@@ -37,7 +37,12 @@
                         <div class="flex-3 content-center text-end">B</div>
                         <div class="flex-3 content-center text-end">C</div>
                         <div class="flex-3 content-center text-end">D</div>
-                        <div class="flex-3 content-center text-end">E</div>
+                        <div class="flex-3 content-center text-end">
+                            <button id="boton-rehacer" title="Generar nuevo talero">
+                                <img src="../img/reload-svgrepo-com(1).png" alt="icono" width="100px">
+                            </button>
+                            E
+                        </div>
                         <div class="flex-1 content-center"></div>
                     </div>
                 </div>
@@ -54,12 +59,12 @@
         </div>
         <div class="flex-1">
             <div class="flex flex-col h-full w-full">
-                <div class="flex-3">
-
+                <div id="container-solucion" class="flex-3">
+                    <ul id="lista-solucion" class="">
+                    </ul>
                 </div>
                 <div class="flex-1">
-                    <button id="boton-rendirse">Ver Solución</button>
-
+                    <button id="boton-rendirse" title="Ver Solución">Rendirse</button>
                 </div>
             </div>
 
