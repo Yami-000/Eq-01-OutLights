@@ -86,7 +86,7 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
 
   mostrarModalLoader();
 
-  // Allow the browser to paint the modal before running the synchronous GA
+  // Allow the browser to paint the modal and start timer before running the synchronous GA
   await new Promise(res => setTimeout(res, 50));
 
   const sol = ag(
@@ -167,7 +167,6 @@ function mostrarModalLoader() {
     modal = document.createElement('div');
     modal.id = 'modal-loader';
     modal.className = 'modal-loader';
-
     const content = document.createElement('div');
     content.className = 'modal-content';
 
@@ -181,10 +180,15 @@ function mostrarModalLoader() {
 
     const text = document.createElement('div');
     text.className = 'loader-text';
-    text.textContent = 'Cargando…';
+    text.textContent = 'Pensando…';
+
+    const infoText = document.createElement('div');
+    infoText.className = 'info-text';
+    infoText.textContent = 'Este proceso puede demorar algunos minutos';
 
     content.appendChild(loader);
     content.appendChild(text);
+    content.appendChild(infoText);
     modal.appendChild(content);
     document.body.appendChild(modal);
   } else {

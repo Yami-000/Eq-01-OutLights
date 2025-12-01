@@ -291,7 +291,7 @@
 .sk-cube-grid .sk-cube {
   width: 33%;
   height: 33%;
-  background-color: #333;
+  background-color: #ffffff;
   float: left;
   -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
   animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
@@ -458,7 +458,7 @@ li {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -479,6 +479,13 @@ li {
   font-weight: 700;
   font-size: 20px;
   letter-spacing: 0.5px;
+}
+.modal-loader .info-text {
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 14px;
+  margin-top: 8px;
+  opacity: 0.9;
 }
 @property --tw-font-weight {
   syntax: "*";
