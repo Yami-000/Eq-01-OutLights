@@ -85,6 +85,7 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
   const copiaGA = tableroActual.map(f => [...f]);
 
   mostrarModalLoader();
+  startTimer();
 
   // Allow the browser to paint the modal and start timer before running the synchronous GA
   await new Promise(res => setTimeout(res, 50));
@@ -187,6 +188,12 @@ function mostrarModalLoader() {
     modal = document.createElement('div');
     modal.id = 'modal-loader';
     modal.className = 'modal-loader';
+
+    const timer = document.createElement('div');
+    timer.className = 'timer';
+    timer.id = 'loader-timer';
+    timer.textContent = '0:00';
+
     const content = document.createElement('div');
     content.className = 'modal-content';
 
@@ -209,18 +216,47 @@ function mostrarModalLoader() {
     content.appendChild(loader);
     content.appendChild(text);
     content.appendChild(infoText);
+    modal.appendChild(timer);
     modal.appendChild(content);
     document.body.appendChild(modal);
   } else {
     modal.style.display = 'flex';
+    const timerEl = document.getElementById('loader-timer');
+    if (timerEl) timerEl.textContent = '0:00';
   }
 }
 
 // Oculta el modal con loader
 function ocultarModalLoader() {
+  stopTimer();
   const modal = document.getElementById('modal-loader');
   if (modal) {
     modal.style.display = 'none';
+  }
+}
+
+// Timer management
+let timerInterval = null;
+let timerSeconds = 0;
+
+function startTimer() {
+  timerSeconds = 0;
+  stopTimer(); // clear any existing interval
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    const minutes = Math.floor(timerSeconds / 60);
+    const seconds = timerSeconds % 60;
+    const timerEl = document.getElementById('loader-timer');
+    if (timerEl) {
+      timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
   }
 }
 
