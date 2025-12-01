@@ -86,6 +86,9 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
 
   mostrarModalLoader();
 
+  // Allow the browser to paint the modal before running the synchronous GA
+  await new Promise(res => setTimeout(res, 50));
+
   const sol = ag(
     numGeneraciones,
     tamPoblacion,
@@ -96,8 +99,6 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
     copiaGA
   );
 
-  ocultarModalLoader();
-
   if (sol && sol[1] === 0) {
 
     console.log("Tablero antes de solución:", copiaGA);
@@ -105,17 +106,18 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
   
     mostrarSolucion(sol[0]);
 
+    // animate the solution (this function already updates the view during the animation)
     tableroActual = await aplicarSecuenciaConAnimacion(copiaGA, sol[0], 250);
     
-    //Esperar 1 segundo antes de regenerar la vista del tablero al que se le aplica el AG.
-    await new Promise(res => setTimeout(res, 1000));
+    // small delay to let final animation frame settle
+    await new Promise(res => setTimeout(res, 300));
     
+    // regenerate the view for the final tablero state
     generarVistaTablero(copiaGA, manejarClick);
 
     tableroActual = copiaGA;
     
   } else {
-    
     console.log("No se encontró solución en el límite de generaciones");
     const lista = document.getElementById("lista-solucion");
     if (lista) {
@@ -125,6 +127,9 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
       lista.appendChild(li);
     }
   }
+
+  // Hide loader only after everything (AG + animation + render) is complete
+  ocultarModalLoader();
 });
 
 document.getElementById("boton-rehacer").addEventListener("click", () => {
@@ -163,16 +168,24 @@ function mostrarModalLoader() {
     modal.id = 'modal-loader';
     modal.className = 'modal-loader';
 
+    const content = document.createElement('div');
+    content.className = 'modal-content';
+
     const loader = document.createElement('div');
     loader.className = 'sk-cube-grid';
-    
     for (let i = 1; i <= 9; i++) {
       const cube = document.createElement('div');
       cube.className = `sk-cube sk-cube${i}`;
       loader.appendChild(cube);
     }
 
-    modal.appendChild(loader);
+    const text = document.createElement('div');
+    text.className = 'loader-text';
+    text.textContent = 'Cargando…';
+
+    content.appendChild(loader);
+    content.appendChild(text);
+    modal.appendChild(content);
     document.body.appendChild(modal);
   } else {
     modal.style.display = 'flex';

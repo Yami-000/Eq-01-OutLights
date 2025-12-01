@@ -458,14 +458,27 @@ li {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.2);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 99998;
+  pointer-events: all;
+}
+.modal-loader .modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 .modal-loader .sk-cube-grid {
   margin: 0;
+}
+.modal-loader .loader-text {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.5px;
 }
 @property --tw-font-weight {
   syntax: "*";
