@@ -89,15 +89,35 @@ document.getElementById("boton-rendirse").addEventListener("click", async () => 
   // Allow the browser to paint the modal and start timer before running the synchronous GA
   await new Promise(res => setTimeout(res, 50));
 
-  const sol = ag(
-    numGeneraciones,
-    tamPoblacion,
-    tamCromosoma,
-    porcentajeTorneo,
-    porcentajeMutacion,
-    porcentajeElitismo,
-    copiaGA
-  );
+  // Run AG in a Web Worker to avoid blocking the UI thread
+  const sol = await new Promise((resolve) => {
+    const worker = new Worker(new URL('./agWorker.js', import.meta.url), { type: 'module' });
+
+    const onMessage = (evt) => {
+      const data = evt.data || {};
+      if (data.type === 'result') {
+        worker.removeEventListener('message', onMessage);
+        worker.terminate();
+        resolve(data.sol);
+      } else if (data.type === 'error') {
+        console.error('AG Worker error:', data.message);
+        worker.removeEventListener('message', onMessage);
+        worker.terminate();
+        resolve(null);
+      }
+    };
+    worker.addEventListener('message', onMessage);
+
+    worker.postMessage({
+      numGeneraciones,
+      tamPoblacion,
+      tamCromosoma,
+      porcentajeTorneo,
+      porcentajeMutacion,
+      porcentajeElitismo,
+      tablero: copiaGA,
+    });
+  });
 
   if (sol && sol[1] === 0) {
 
