@@ -12,7 +12,7 @@ Este proyecto puede ejecutarse de dos formas: utilizando la extensión **Live Se
 
 4. Haz clic derecho en cualquier parte del código y selecciona Open with Live Server.
 
-5. l proyecto se abrirá automáticamente en el navegador predeterminado.
+5. El proyecto se abrirá automáticamente en el navegador predeterminado.
 
 ### Opción 2: Ejecutar con XAMPP
 
